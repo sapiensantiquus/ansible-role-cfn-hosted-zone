@@ -1,0 +1,3 @@
+hz_build_dir: "build"
+hz_template_dir: "{{ hz_build_dir }}"
+hz_zone_description: "{{ hz_stack_name }} Zone"

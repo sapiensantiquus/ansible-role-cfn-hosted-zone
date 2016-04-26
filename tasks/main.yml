@@ -1,0 +1,37 @@
+- name: Set session token if extant
+  set_fact:
+    aws_session_token: "{{ lookup('env','AWS_SESSION_TOKEN') }}"
+
+- name: Create build directory
+  file:
+    state: directory
+    dest: "{{ item }}"
+  with_items:
+    - "{{ hz_template_dir }}"
+    - "{{ hz_build_dir }}"
+
+- name: Template the HostedZone
+  template:
+    src: hosted.json.j2
+    dest: "{{ hz_template_dir }}/hosted.json"
+
+- name: Create cloudformation stack
+  cloudformation:
+    template_parameters:
+      ZoneName: "{{ hz_zone_name }}"
+    stack_name: "{{ hz_stack_name }}"
+    region: "{{ hz_region }}"
+    template: "{{ hz_template_dir }}/hosted.json"
+    security_token: "{{ aws_session_token }}"
+    tags: "{{ tags }}"
+  when: aws_session_token is defined
+
+- name: Create cloudformation stack
+  cloudformation:
+    template_parameters:
+      ZoneName: "{{ hz_zone_name }}"
+    stack_name: "{{ hz_stack_name }}"
+    region: "{{ hz_region }}"
+    template: "{{ hz_template_dir }}/hosted.json"
+    tags: "{{ tags }}"
+  when: aws_session_token is not defined
