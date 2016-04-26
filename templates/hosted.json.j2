@@ -1,0 +1,29 @@
+{
+  "AWSTemplateFormatVersion" : "2010-09-09",
+  "Description" : "{{ hz_zone_description }}",
+  "Parameters" : {
+    "ZoneName" : {
+      "Type" : "String"
+    }
+  },
+  "Resources" : {
+    "Zone": {
+      "Type": "AWS::Route53::HostedZone",
+      "Properties": {
+        "HostedZoneConfig": {
+          "Comment": { "Ref" : "ZoneName" }
+        },
+        "Name": { "Ref" : "ZoneName" },
+        "VPCs": [
+          {% for vpc in hz_vpcs %}
+          {
+            "VPCId": "{{ vpc.id }}",
+            "VPCRegion": "{{ vpc.region }}"
+          }
+          {% if not loop.last %}, {% endif %}
+          {% endfor %}
+        ]
+      }
+    }
+  }
+}
