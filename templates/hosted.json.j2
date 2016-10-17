@@ -13,8 +13,9 @@
         "HostedZoneConfig": {
           "Comment": { "Ref" : "ZoneName" }
         },
-        "Name": { "Ref" : "ZoneName" },
-        "VPCs": [
+        "Name": { "Ref" : "ZoneName" }
+        {% if hz_vpcs is defined %}
+        ,"VPCs": [
           {% for vpc in hz_vpcs %}
           {
             "VPCId": "{{ vpc.id }}",
@@ -23,6 +24,7 @@
           {% if not loop.last %}, {% endif %}
           {% endfor %}
         ]
+        {% endif %}
       }
     }
   }
